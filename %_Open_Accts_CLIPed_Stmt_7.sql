@@ -5,7 +5,7 @@ select
     sum(case when outcome ilike '%approve%' then 1 else 0 end) as Approved_CLIP7,
     count(distinct card_id) as Total_Accts,
     Approved_CLIP7/Total_accts as CLIP7_rate_nonfraud
-from (select * from edw_db.public.clip_results_data where statement_number = 7 and date_trunc('month',evaluated_timestamp) >= '2021-09-01') a 
+from (select * from edw_db.public.clip_results_data where statement_number = 7 and date_trunc('month',evaluated_timestamp) >= '2021-01-01') a 
     inner join
       (select * 
           from edw_db.Public.account_statements
