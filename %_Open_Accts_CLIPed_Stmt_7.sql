@@ -1,3 +1,5 @@
+//// % Open Accounts CLIP'd at statement 7 (excludes Q2 2021 fraud attack population)
+
 select
     date_trunc('month',evaluated_timestamp)::date as clip_month,
     sum(case when outcome ilike '%approve%' then 1 else 0 end) as Approved_CLIP7,
