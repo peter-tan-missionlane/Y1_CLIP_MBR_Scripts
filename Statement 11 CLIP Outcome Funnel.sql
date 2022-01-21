@@ -1,3 +1,29 @@
+with funnel_drv as(
+select
+   card_id
+  ,statement_number
+  ,substring(b.statement_end_dt,1,7) as stmt_month
+  ,to_char(EVALUATED_TIMESTAMP,'YYYY-MM') AS month_evaluated
+  ,outcome
+  ,DECISION_DATA
+  ,CLIP_RISK_GROUP
+  ,CLIP_POLICY_NAME
+  ,TEST_SEGMENT
+  ,(POST_CLIP_LINE_LIMIT - PRE_CLIP_LINE_LIMIT) as CLIP_AMT
+  ,decision_data:"never_delinquent__passed" as no_DQ_flag1
+  ,decision_data:"delinquency__passed" as no_DQ_flag2
+  ,decision_data:"average_utilization_3_months"::FLOAT as util_at_clip 
+from EDW_DB.PUBLIC.CLIP_RESULTS_DATA a
+  inner join
+      (select * 
+          from edw_db.Public.account_statements
+          where statement_num = 11
+                  and customer_id not in (select user_id as customer_id from sandbox_db.user_tb.BWEISS_FRAUD_ATTACK_MAY_24)) b
+     on a.card_id = b.account_id
+)
+
+
+///Statement 7/11 funnel
 select
     month_evaluated as clip_month
     ,outcome
@@ -33,7 +59,7 @@ from
       end as util_band,
       count(card_id) as accounts,
       sum(clip_amt)
-    from sandbox_db.user_tb.acct_clip_1
+    from funnel_drv
     group by 1,2,3,4,5,6,7,8,9,10,11)
 where
     statement_number = 11
